@@ -3,6 +3,8 @@
 ## Business Task
 
 ## Entity Relationship Diagram
+![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/655e02ca-a3dc-4e94-bb32-e45fa198cefe)
+
 
 ## General Insights:
 - *Customer Spending and Visits:* The queries aimed to understand customer behaviours, such as total amounts spent, frequency of visits, and preferences before and after becoming members.
