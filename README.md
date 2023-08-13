@@ -24,4 +24,17 @@ These are the syntax and functions that have been used to explore and answer the
   8. Limiting Results (LIMIT)
   9. Distinct Values (DISTINCT)
 
+## Questions and Solutions
+> What is the total amount each customer spent at the restaurant?
 
+```sql
+SELECT
+    sales.customer_id
+  , SUM(menu.price) AS total_purchase
+FROM dannys_diner.sales 
+LEFT JOIN dannys_diner.menu 
+  ON sales.product_id = menu.product_id
+GROUP BY sales.customer_id
+ORDER BY total_purchase DESC;
+```
+![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/af990388-739d-4c18-85d6-d6ff3b7ee0db)
