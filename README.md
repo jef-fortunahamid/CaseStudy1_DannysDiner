@@ -6,7 +6,7 @@
 
 ## General Insights:
 - *Customer Spending and Visits:* The queries aimed to understand customer behaviours, such as total amounts spent, frequency of visits, and preferences before and after becoming members.
-- *Menu Item popularity:* Several questions focused on identifying popular menu items, both overall and specific ot each member.
+- *Menu Item Popularity:* Several questions focused on identifying popular menu items, both overall and specific ot each member.
 - *Membership Impact:* The impact of membership on purchasing behaviour was a recurring theme, with insights into purchases made before and after joining the loyalty program.
 - *Points System:* The potential introduction of a points system was explored, considering various multipliers for specific items and timeframes.
 
