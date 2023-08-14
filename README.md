@@ -248,6 +248,12 @@ WHERE
 GROUP BY sales.customer_id
 ORDER BY total_points DESC;
 ```
+- The main logic for calculating points is in the `SUM` function with a `CASE WHEN` statement:
+  	- If the purchase was made between the customer's join date and 6 days after their join date, they earn points equal to the product's price multiplied by 10 and then multiplied by 2 (so, 20 times the price).
+  	- If the product is 'sushi', they earn points equal to the product's price multiplied by 10 and then multiplied by 2 (again, 20 times the price of the sushi).
+  	- For all other products, they earn points equal to the product's price multiplied by 10.
+- We used the filtering with `WHERE sales.order_date <= '2021-01-31'` to make sure that we only consider purchases made on or before 31 January, 2021.
+
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/a5da89ed-0c87-4be8-b442-2c08ef624ec3)
 
 > Bonus Questions
