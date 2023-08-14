@@ -34,8 +34,8 @@ INNER JOIN dannys_diner.menu
 GROUP BY sales.customer_id
 ORDER BY total_purchase DESC;
 ```
--'sales.customer_id' and 'menu.price' columns are from 'dannys_dinner.sales' and 'dannys_diner.menu, repectively. So we need to merge the tables using INNER JOIN (connecting them based on the 'product_id').
--We're selecting the record of each customer through 'sales.customer_id' and we're adding (summing) the prices of all the products, 'SUM(menu.price) AS total_purchase'.
+- 'sales.customer_id' and 'menu.price' columns are from 'dannys_dinner.sales' and 'dannys_diner.menu, repectively. So we need to merge the tables using INNER JOIN (connecting them based on the 'product_id').
+- We're selecting the record of each customer through 'sales.customer_id' and we're adding (summing) the prices of all the products, 'SUM(menu.price) AS total_purchase'.
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/af990388-739d-4c18-85d6-d6ff3b7ee0db)
 
 > How many days has each customer visited the restaurant?
