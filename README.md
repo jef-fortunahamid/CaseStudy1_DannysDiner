@@ -224,7 +224,8 @@ ORDER BY total_points DESC;
 ```
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/a5da89ed-0c87-4be8-b442-2c08ef624ec3)
 
-> Bonus Question
+> Bonus Questions
+
 > Danny and his team can use to quickly derive insights without needing to join the tables using SQL. Recreate the following table output using the available data.
 
 | customer_id | order_date |product_name |	price |	member |
@@ -249,11 +250,11 @@ SELECT
     sales.customer_id
   , sales.order_date
   , menu.product_name
-  , menu.price,
-  CASE 
-    WHEN sales.order_date >= members.join_date THEN 'Y'
-    ELSE 'N'
-    END AS member
+  , menu.price
+  , CASE 
+        WHEN sales.order_date >= members.join_date THEN 'Y'
+        ELSE 'N'
+      END AS member
 FROM dannys_diner.sales
 LEFT JOIN dannys_diner.members
   ON sales.customer_id = members.customer_id
@@ -266,6 +267,60 @@ ORDER BY
 ```
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/2d104ff9-2a0f-46a3-b0e5-887609a757ea)
 
+> Danny also requires further information about the ranking of customer products, but he purposely does not need the ranking for non-member purchases so he expects null ranking values for the records when customers are not yet part of the loyalty program.
 
-
-
+| customer_id	| order_date	| product_name	| price	| member	| ranking |
+| ------------| ------------| --------------| ------| --------| --------| 
+| A	| 2021-01-01	| curry	| 15	| N	| null | 
+| A	| 2021-01-01	| sushi	| 10	| N	| null | 
+| A	| 2021-01-07	| curry	| 15	| Y	| 1 | 
+| A	| 2021-01-10	| ramen	| 12	| Y	| 2 | 
+| A	| 2021-01-11	| ramen	| 12	| Y	| 3 | 
+| A	| 2021-01-11	| ramen	| 12	| Y	| 3 | 
+| B	| 2021-01-01	| curry	| 15	| N	| null | 
+| B	| 2021-01-02	| curry	| 15	| N	| null | 
+| B	| 2021-01-04	| sushi	| 10	| N	| null | 
+| B	| 2021-01-11	| sushi	| 10	| Y	| 1 | 
+| B	| 2021-01-16	| ramen	| 12	| Y	| 2 | 
+| B	| 2021-02-01	| ramen	| 12	| Y	| 3 | 
+| C	| 2021-01-01	| ramen	| 12	| N	| null | 
+| C	| 2021-01-01	| ramen	| 12	| N	| null | 
+| C	| 2021-01-07	| ramen	| 12	| N	| null | 
+```sql
+WITH joint_sales AS (
+	SELECT
+	    sales.customer_id
+	   , sales.order_date
+	   , menu.product_name
+	   , menu.price
+	   , CASE 
+  	    WHEN sales.order_date >= members.join_date THEN 'Y'
+  	    ELSE 'N'
+  	    END AS member
+	FROM dannys_diner.sales
+	LEFT JOIN dannys_diner.members
+	  ON sales.customer_id = members.customer_id
+	LEFT JOIN dannys_diner.menu
+	  ON sales.product_id = menu.product_id
+	ORDER BY
+	     sales.customer_id
+	   , sales.order_date
+)
+SELECT
+    customer_id
+  , order_date
+  , product_name
+  , price
+  , member
+  , CASE
+        WHEN member = 'N' THEN null
+        ELSE
+          RANK() OVER(PARTITION BY customer_id, member ORDER BY order_date)
+      END AS ranking
+FROM joint_sales
+ORDER BY
+    customer_id
+  , order_date
+;
+```
+![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/f8613629-3c51-483e-9d22-982701d5f894)
