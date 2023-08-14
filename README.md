@@ -1,5 +1,6 @@
 # Case Study #1 Danny's Diner
 *Note: All information and data related to the case study were obtained from [here](https://8weeksqlchallenge.com/case-study-1/).*
+![Screenshot 2023-08-13 at 8 37 01 pm](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/0f385bf2-4334-4559-a11f-b99ab5865a61)
 
 ## Business Task
 Danny wants to understand his customers' preferences, visit patterns, and spending habits. He believes this information will enhance  the customer experience. Furthermore, he's considering exopanding the customer loyalty program and requires datasets for his team to review without SQL. Howver, due to privacy issues, Danny only provided with a sample of his overall customer data. Hoping that these sample data are enough to write fully functioning SQL queries to help him answer his questions.
