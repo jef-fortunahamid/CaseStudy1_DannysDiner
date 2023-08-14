@@ -16,9 +16,9 @@ Danny wants to understand his customers' preferences, visit patterns, and spendi
 
 ## Key SQL Syntax and Functions
 These are the syntax and functions that have been used to explore and answer the problems given.
-  1. Joins (LEFT JOIN, INNER JOIN)
+  1. Joins (INNER JOIN)
   2. Aggregation Functions (SUM, COUNT)
-  3. Window Functions (RANK(), ROW_NUMBER() DENSED_RANK())
+  3. Window Functions (RANK())
   4. Common Table Expressions (CTE)
   5. Conditional Logic (CASE WHEN)
   6. Distinct Values (DISTINCT)
@@ -289,9 +289,9 @@ SELECT
         ELSE 'N'
       END AS member
 FROM dannys_diner.sales
-LEFT JOIN dannys_diner.members
+INNER JOIN dannys_diner.members
   ON sales.customer_id = members.customer_id
-LEFT JOIN dannys_diner.menu
+INNER JOIN dannys_diner.menu
   ON sales.product_id = menu.product_id
 ORDER BY
     sales.customer_id
@@ -331,9 +331,9 @@ WITH joint_sales AS (
   	    ELSE 'N'
   	    END AS member
 	FROM dannys_diner.sales
-	LEFT JOIN dannys_diner.members
+	INNER JOIN dannys_diner.members
 	  ON sales.customer_id = members.customer_id
-	LEFT JOIN dannys_diner.menu
+	INNER JOIN dannys_diner.menu
 	  ON sales.product_id = menu.product_id
 	ORDER BY
 	     sales.customer_id
@@ -356,4 +356,35 @@ ORDER BY
   , order_date
 ;
 ```
+```sql
+/* Found another way to answer this question */
+SELECT
+    sales.customer_id
+  , sales.order_date
+  , menu.product_name
+  , menu.price
+  , CASE 
+      WHEN sales.order_date >= members.join_date THEN 'Y'
+      ELSE 'N'
+    END AS member
+  , CASE
+      WHEN sales.order_date >= members.join_date 
+        THEN RANK() OVER(PARTITION BY sales.customer_id, 
+          (CASE 
+              WHEN sales.order_date >= members.join_date THEN 'Y'
+              ELSE 'N'
+              END)
+          ORDER BY sales.order_date)
+      ELSE null
+    END AS ranking
+FROM dannys_diner.sales
+LEFT JOIN dannys_diner.members
+  ON sales.customer_id = members.customer_id
+LEFT JOIN dannys_diner.menu
+  ON sales.product_id = menu.product_id
+ORDER BY
+    sales.customer_id
+  , sales.order_date;
+```
+
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/f8613629-3c51-483e-9d22-982701d5f894)
