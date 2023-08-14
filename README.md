@@ -23,7 +23,7 @@ These are the syntax and functions that have been used to explore and answer the
   6. Distinct Values (DISTINCT)
 
 ## Questions and Solutions
-> What is the total amount each customer spent at the restaurant?
+> 1. What is the total amount each customer spent at the restaurant?
 ```sql
 SELECT
     sales.customer_id
@@ -34,11 +34,12 @@ INNER JOIN dannys_diner.menu
 GROUP BY sales.customer_id
 ORDER BY total_purchase DESC;
 ```
-- 'sales.customer_id' and 'menu.price' columns are from 'dannys_dinner.sales' and 'dannys_diner.menu, repectively. So we need to merge the tables using INNER JOIN (connecting them based on the 'product_id').
+- Here, 'sales.customer_id' and 'menu.price' columns are from 'dannys_dinner.sales' and 'dannys_diner.menu, repectively. So we need to merge the tables using INNER JOIN (connecting them based on the 'product_id').
 - We're selecting the record of each customer through 'sales.customer_id' and we're adding (summing) the prices of all the products, 'SUM(menu.price) AS total_purchase'.
+  
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/af990388-739d-4c18-85d6-d6ff3b7ee0db)
 
-> How many days has each customer visited the restaurant?
+> 2. How many days has each customer visited the restaurant?
 ```sql
 SELECT
     customer_id
@@ -46,9 +47,11 @@ SELECT
 FROM dannys_diner.sales
 GROUP BY customer_id;
 ```
+- Here, we're counting the unique (or distinct) order dates for each customer, 'COUNT(DISTINCT order_date) AS total_purchasing_days'. This will tell us how many different days each customer madae a purchase. So, if a customer made a multiple purchase on that date, the 'DISTINCT' ensures we don't count the same date multiple times.
+
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/72c44518-ad9b-4a3e-b22c-77220ce7cc37)
 
-> What was the first item(s) from the menu purchased by each customer?
+> 3. What was the first item(s) from the menu purchased by each customer?
 ```sql
 WITH first_order AS (
   SELECT
@@ -60,7 +63,7 @@ WITH first_order AS (
           ) AS sales_date_rank -- to rank the days starting from the first day they are a customer
     , menu.product_name
   FROM dannys_diner.sales
-  LEFT JOIN dannys_diner.menu
+  INNER JOIN dannys_diner.menu
     ON sales.product_id = menu.product_id
 )
 SELECT DISTINCT --to select all unique menu items purchased on the same day 
@@ -69,13 +72,15 @@ SELECT DISTINCT --to select all unique menu items purchased on the same day
 FROM first_order
 WHERE sales_date_rank = 1;
 ```
+- We created a Common Table Expression (CTE) named as 'first_order'. Within this subquery, we rank each customer ('PARTITION BY sales.customer_id') by the order date of each purchases ('ORDER BY sales.order_date') through 'RANK()' window function. The window function will ensure, if the first purchase has multiple items, will rank them all as 1. We used this ranking to filter, 'WHERE' in the main query.
+
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/013f05b9-ece4-4d6d-b6d9-a36697222724)
 
-> What is the most purchased item on the menu and how many times was it ourchased by all customers?
+> 4. What is the most purchased item on the menu and how many times was it ourchased by all customers?
 ```sql
 SELECT
     menu.product_name
-  , COUNT(sales.*) AS total_purchases
+  , COUNT(sales.product_id) AS total_purchases
 FROM dannys_diner.sales
 INNER JOIN dannys_diner.menu
   ON sales.product_id = menu.product_id
@@ -83,9 +88,11 @@ GROUP BY menu.product_name
 ORDER BY total_purchases DESC
 LIMIT 1;
 ```
+- 'menu.product_name' column from 'dannys_diner.menu' table and 'sales.product_id' column from 'dannys_diner.sales' table are what we needed to answer this question. We did an 'INNER JOIN' based on the 'product_id'. This makes sure that for each sale, we can also access the corresponding product's name.
+  
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/00dfc7dd-04e4-455c-b28d-94ef6cd86ecc)
 
-> Which item(s) was(were) the most popular for each customer?
+> 5. Which item(s) was(were) the most popular for each customer?
 ```sql
 WITH customer_menu_count AS (  
   SELECT
@@ -98,7 +105,7 @@ WITH customer_menu_count AS (
           ) AS menu_rank 
         --to give us the same rank for menu items that have the same count
   FROM dannys_diner.sales
-  LEFT JOIN dannys_diner.menu
+  INNER JOIN dannys_diner.menu
     ON sales.product_id = menu.product_id
   GROUP BY 
       sales.customer_id
@@ -111,9 +118,12 @@ SELECT
 FROM customer_menu_count
 WHERE menu_rank = 1; --we only need the top rank
 ```
+- We created a CTE, 'customer_menu_count' wherein, we use the 'RANK()' window function. For each customer ('PARTITION BY sales.customer_id'), it ranks their purchased products based on how many times they bought them ('ORDER BY COUNT(sales.product_id) DESC'). The most frequently purchased product gets a rank of 1.
+- In the main query, we used the ranking as our filter ('WHERE menu_rank = 1'). This filters the results to only include the most frequently purchsed item for each customer.
+  
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/bf207c33-0b3b-477f-a6b0-316ed018f7c9)
 
-> Which Item was pourchased first by the customer after they became a member and what date was it? (including the date they joined)
+> 6. Which Item was pourchased first by the customer after they became a member and what date was it? (including the date they joined)
 ```sql
 WITH first_purchase_after_membership AS (
   SELECT
@@ -127,9 +137,9 @@ WITH first_purchase_after_membership AS (
             --to rank order date in chronological order from or after join date
     , members.join_date
   FROM dannys_diner.sales 
-  LEFT JOIN dannys_diner.members
+  INNER JOIN dannys_diner.members
     ON members.customer_id = sales.customer_id
-  LEFT JOIN dannys_diner.menu 
+  INNER JOIN dannys_diner.menu 
     ON sales.product_id = menu.product_id
   WHERE sales.order_date >= members.join_date -- to select dates on or after the join date
 )
@@ -141,9 +151,13 @@ SELECT DISTINCT --to select all unique menu items purchased on the same day
 FROM first_purchase_after_membership
 WHERE purchase_rank = 1;
 ```
+- We created a CTE named 'first_purchase_after_membership' and used the 'RANK()' window function. RANK() OVER (PARTITION BY sales.customer_id ORDER BY sales.order_date) AS purchase_rank: This window function ranks each customer's purchases in chronological order. The earliest purchase after becoming a member gets a rank of 1. Then filtered with 'WHERE sales.order_date >= members.join_date', to select dates on or after the join date.
+- We joined three different tables, 'dannys_diner.sales' and 'dannys_diner.members' based on 'members.customer_id = sales.customer_id', and 'dannys_diner.sales' and 'dannys_diner.menu' based on 'sales.product_id = menu.product_id'. We used the INNER JOIN as we only wanted the records where there's a matching 'customer_id' and 'product_id' in both tables.
+- On the main query, we filtered the results to only include the first purchase made by each customer after joining as a member with 'WHERE purchase_rank = 1'.
+
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/3a1d483e-495f-457e-9422-154c0416c7c2)
 
-> Which menu item(s) was(were) purchased just before the customer became a member and when?
+> 7. Which menu item(s) was(were) purchased just before the customer became a member and when?
 ```sql
 WITH purchase_before_membership AS (
   SELECT
@@ -156,9 +170,9 @@ WITH purchase_before_membership AS (
               ) AS purchase_rank
     , members.join_date
   FROM dannys_diner.sales 
-  LEFT JOIN dannys_diner.members
+  INNER JOIN dannys_diner.members
     ON members.customer_id = sales.customer_id
-  LEFT JOIN dannys_diner.menu 
+  INNER JOIN dannys_diner.menu 
     ON sales.product_id = menu.product_id
   WHERE sales.order_date < members.join_date -- to select dates before the join date
 )
@@ -171,7 +185,7 @@ WHERE purchase_rank = 1;
 ```
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/14401117-4b3a-4b41-b128-cfea53b73277)
 
-> WHat is the number of unique menu items and total amount spent for each member before they became a member?
+> 8. What is the number of unique menu items and total amount spent for each member before they became a member?
 ```sql
 SELECT
     sales.customer_id
@@ -203,7 +217,7 @@ ORDER BY total_points DESC;
 ```
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/bb78487f-98ab-4397-8820-1384b92549f8)
 
-> In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at bthe end of January?
+> 9. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at bthe end of January?
 ```sql
 SELECT
     sales.customer_id
@@ -228,7 +242,7 @@ ORDER BY total_points DESC;
 
 > Bonus Questions
 
-> Danny and his team can use to quickly derive insights without needing to join the tables using SQL. Recreate the following table output using the available data.
+> 10. Danny and his team can use to quickly derive insights without needing to join the tables using SQL. Recreate the following table output using the available data.
 
 | customer_id | order_date |product_name |	price |	member |
 |-------------|------------|-------------|--------|-------|
@@ -269,7 +283,7 @@ ORDER BY
 ```
 ![image](https://github.com/jef-fortunahamid/CaseStudy1_DannysDiner/assets/125134025/2d104ff9-2a0f-46a3-b0e5-887609a757ea)
 
-> Danny also requires further information about the ranking of customer products, but he purposely does not need the ranking for non-member purchases so he expects null ranking values for the records when customers are not yet part of the loyalty program.
+> 11. Danny also requires further information about the ranking of customer products, but he purposely does not need the ranking for non-member purchases so he expects null ranking values for the records when customers are not yet part of the loyalty program.
 
 | customer_id	| order_date	| product_name	| price	| member	| ranking |
 | ------------| ------------| --------------| ------| --------| --------| 
