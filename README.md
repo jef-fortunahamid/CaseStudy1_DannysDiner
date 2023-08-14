@@ -226,6 +226,7 @@ ORDER BY total_points DESC;
 
 > Bonus Question
 > Danny and his team can use to quickly derive insights without needing to join the tables using SQL. Recreate the following table output using the available data.
+
 | customer_id | order_date |product_name |	price |	member |
 |-------------|------------|-------------|--------|-------|
 | A |	2021-01-01 |	curry |	15 |	N |
