@@ -16,12 +16,12 @@ Danny wants to understand his customers' preferences, visit patterns, and spendi
 
 ## Key SQL Syntax and Functions
 These are the syntax and functions that have been used to explore and answer the problems given.
-  1. Joins (INNER JOIN)
-  2. Aggregation Functions (SUM, COUNT)
-  3. Window Functions (RANK())
+  1. Joins (`INNER JOIN`)
+  2. Aggregation Functions (`SUM`, `COUNT`)
+  3. Window Functions (`RANK()`)
   4. Common Table Expressions (CTE)
-  5. Conditional Logic (CASE WHEN)
-  6. Distinct Values (DISTINCT)
+  5. Conditional Logic (`CASE WHEN`)
+  6. Distinct Values (`DISTINCT`)
 
 ## Questions and Solutions
 > 1. What is the total amount each customer spent at the restaurant?
